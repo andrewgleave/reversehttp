@@ -19,6 +19,8 @@ manual process. By using the [ReverseHttp protocol][rev], programs can
 provide services to the Web just as easily as they request services
 from the Web.
 
+This is a MooTools port of the original jQuery code. All demos are functional except for PubSub.
+
 ## Code overview
 
  - `src/` holds the server implementation, written in Erlang using
