@@ -2,67 +2,111 @@
   <head>
     <title>PubSubHubBub Driver</title>
     <link type="text/css" rel="stylesheet" href="demostyle.css">
-    <script type="text/javascript" src="jquery-1.3.2.js"></script>
-    <script type="text/javascript" src="httpd.js"></script>
-    <script type="text/javascript" src="messaging.js"></script>
-    <script type="text/javascript" src="demolog.js"></script>
-    <script type="text/javascript" src="pshb.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/mootools/1.2.3/mootools-yui-compressed.js"></script>
+    <script type="text/javascript" charset="utf-8" src="mootools-extras.js"></script>
+    <script type="text/javascript" src="oom.Httpd.js"></script>
+    <script type="text/javascript" src="oom.Messaging.js"></script>
   </head>
   <body>
     <div id="outerContainer">
       <div id="innerContainer">
-	<h1>PubSubHubBub Driver</h1>
-	<h2>Subscription</h2>
-	<table>
-	  <tr>
-	    <th>Topic</th>
-	    <td><input id="sub_topic" size="60" type="text" value="foo"/></td>
-	  </tr>
-	  <tr>
-	    <th>Source</th>
-	    <td><input id="source_url" size="60" type="text" value="http://localhost:8001/subscribe/x/amq.direct"/></td>
-	  </tr>
-	  <tr>
-	    <th>Sink</th>
-	    <td><input id="sink_url" size="60" type="text" value="http://localhost:8000/sub/ep"/></td>
-	  </tr>
-	  <tr>
-	    <td colspan="2">
-	      <input id="token_generation_required" type="checkbox" checked="checked"/>
-	      <label for="token_generation_required">Generate token?</label>
-	    </td>
-	  </tr>
-	  <tr>
-	    <th>Token</th>
-	    <td><input id="sink_token" size="60" type="text" value=""/></td>
-	  </tr>
-	</table>
-	<p>
-	  <button onclick="sub_clicked()">Subscribe</button>
-	  <button onclick="unsub_clicked()">Unsubscribe</button>
-	</p>
-	<h2>Injection</h2>
-	<table>
-	  <tr>
-	    <th>Topic</th>
-	    <td><input id="pub_topic" size="60" type="text" value="foo"/></td>
-	  </tr>
-	  <tr>
-	    <th>Target</th>
-	    <td><input id="target_url" size="60" type="text" value="http://localhost:8001/endpoint/x/amq.direct"/></td>
-	  </tr>
-	  <tr>
-	    <td colspan="2">
-	      Message:<br/>
-	      <textarea id="pub_message"></textarea>
-	    </td>
-	  </tr>
-	</table>
-	<p>
-	  <button onclick="send_clicked()">Send</button>
-	</p>
-	<pre id="logOutput"></pre>
-	<script type="text/javascript">pshb_main();</script>
+    <h1>PubSubHubBub Driver</h1>
+    <h2>Subscription</h2>
+    <table>
+      <tr>
+        <th>Topic</th>
+        <td><input id="sub_topic" size="60" type="text" value="foo"/></td>
+      </tr>
+      <tr>
+        <th>Source</th>
+        <td><input id="source_url" size="60" type="text" value="http://localhost:8001/subscribe/x/amq.direct"/></td>
+      </tr>
+      <tr>
+        <th>Sink</th>
+        <td><input id="sink_url" size="60" type="text" value="http://localhost:8000/sub/ep"/></td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <input id="token_generation_required" type="checkbox" checked="checked"/>
+          <label for="token_generation_required">Generate token?</label>
+        </td>
+      </tr>
+      <tr>
+        <th>Token</th>
+        <td><input id="sink_token" size="60" type="text" value=""/></td>
+      </tr>
+    </table>
+    <p>
+      <button id="subscribe_button">Subscribe</button>
+      <button id="unsubscribe_button">Unsubscribe</button>
+    </p>
+    <h2>Injection</h2>
+    <table>
+      <tr>
+        <th>Topic</th>
+        <td><input id="pub_topic" size="60" type="text" value="foo"/></td>
+      </tr>
+      <tr>
+        <th>Target</th>
+        <td><input id="target_url" size="60" type="text" value="http://localhost:8001/endpoint/x/amq.direct"/></td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          Message:<br/>
+          <textarea id="pub_message"></textarea>
+        </td>
+      </tr>
+    </table>
+    <p>
+      <button onclick="send_clicked()">Send</button>
+    </p>
+    <pre id="logOutput"></pre>
+    <script type="text/javascript">
+        
+        var PubSubDemo = new Class({
+            initialize: function() {
+                dbug.enable();
+                this.sourceUri = $('source_url');
+                this.sinkUri = $('sink_url');
+                this.attach();
+            },
+            attach: function() {
+                $('subscribe_button').addEvent('click', function() { this.handleAction('subscribe');}.bind(this));
+                $('unsubscribe_button').addEvent('click', function() { this.handleAction('unsubscribe');}.bind(this));
+            },
+            handleAction: function(verb) {
+                this.source = new oom.RemoteSource({url: this.sourceUri.get('value')});
+                
+                if($("token_generation_required").get('checked')) {
+                    var endpoint = new oom.RemoteEndpoint({url: this.sinkUri.get('value')});
+                    dbug.log('Generating token...');
+                    endpoint.generate_token(verb, function(t) {
+                        dbug.log('Generated token');
+                        $('sink_token').set('value', t || '');
+                        if(t) k();
+                    }.bind(this));
+                }
+                else
+                    k();
+            },
+            respond: function() {
+                this.source[verb]($("sink_url").get("value"), $("sub_topic").get("value"),
+                    ["sync", "async"],
+                    $("sink_token").get("value"),
+                    function (result) {
+                        dbug.log("Action '" + verb + "' result: " + result);
+                    });
+            },
+            send: function() {
+                var e = new oom.RemoteEndpoint({url: $("target_url").attr("value")});
+                e.deliver($("pub_topic").get("value"), $("pub_message").get("value"), "text/plain",
+                    function (result) {
+                        dbug.log("Send attempt result: " + result);
+                    });
+            }
+        });
+        new PubSubDemo();
+    </script>
       </div>
     </div>
   </body>

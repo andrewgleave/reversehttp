@@ -2,10 +2,9 @@
   <head>
     <title>Reverse HTTP Demo</title>
     <link type="text/css" rel="stylesheet" href="demostyle.css">
-    <script type="text/javascript" src="jquery-1.3.2.js"></script>
-    <script type="text/javascript" src="httpd.js"></script>
-    <script type="text/javascript" src="demolog.js"></script>
-    <script type="text/javascript" src="demo.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/mootools/1.2.3/mootools-yui-compressed.js"></script>
+    <script type="text/javascript" charset="utf-8" src="mootools-extras.js"></script>
+    <script type="text/javascript" src="oom.Httpd.js"></script>
   </head>
   <body>
     <div id="outerContainer">
@@ -14,7 +13,7 @@
 	<p>
 	  This page contains a running web server, written in
 	  Javascript. The web server responds to requests to <b><a
-	  id="demoLabel_link" target="_blank"
+	  id="demo_label_link" target="_blank"
 	  href="http://???/">http://???/</a></b> by sending the
 	  contents of the text box below.
 	</p>
@@ -24,7 +23,7 @@
 	  box below. Try editing the text box's contents and
 	  refreshing the other window!
 	</p>
-	<textarea id="replyText" cols="80" rows="12">
+	<textarea id="reply_body" cols="80" rows="12">
 &lt;html&gt;
   &lt;head&gt;&lt;title&gt;Test reply!&lt;/title&gt;&lt;/head&gt;
   &lt;body&gt;
@@ -35,15 +34,49 @@
 	<p>
 	  To set the virtual-host this web server serves content for,
 	  edit this input field:
-	  <input type="text" id="demoLabel" name="demoLabel"
-		 onkeypress="demoLabel_keypress()"
-		 onchange="demoLabel_changed()"
-		 value="demo" />
+	  <input type="text" id="demo_label" value="demo" />
 	  Note how the link in the top paragraph changes.
 	</p>
 	<pre id="logOutput"></pre>
-	<script type="text/javascript">demo_main();</script>
+
       </div>
     </div>
+    <script type="text/javascript" charset="utf-8">        
+        dbug.enable();
+        var Demo = new Class({
+            initialize: function() {
+                this.labelLink = $('demo_label_link');
+                this.replyBody = $('reply_body');
+                this.timeout = null;
+                this.server = new oom.Server({label: 'auto',
+                                       callback: this.respond,
+                                       onLocationChanged: this.updateLocaton});
+                this.labelElem = $('demo_label').set('value', this.server.options.label);
+                this.attach();
+                this.server.start();
+            },
+            attach: function() {
+                this.labelElem.addEvent('keyup', function(e) {
+                    if(this.timeout)
+                        this.timeout = $clear(this.timeout);
+                    this.timeout = this.start.delay(300, this);
+                }.bind(this));
+            },
+            start: function() {
+                var label = this.labelElem.get('value');
+                if(this.server.options.label != label) {
+                    this.server.options.label = label;
+                    this.server.restart()
+                }
+            },
+            respond: function(request) {
+                request.respond(new oom.Response({status: 200, message: 'OK', body: $('reply_body').get('value')}));
+            },
+            updateLocaton: function(location) {
+                $('demo_label_link').set({'text': location, 'href': location});
+            }
+        });
+        new Demo();
+    </script>
   </body>
 </html>
