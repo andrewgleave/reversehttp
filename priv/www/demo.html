@@ -9,21 +9,21 @@
   <body>
     <div id="outerContainer">
       <div id="innerContainer">
-	<h1>Reverse HTTP Demo</h1>
-	<p>
-	  This page contains a running web server, written in
-	  Javascript. The web server responds to requests to <b><a
-	  id="demo_label_link" target="_blank"
-	  href="http://???/">http://???/</a></b> by sending the
-	  contents of the text box below.
-	</p>
-	<p>
-	  To try it out, click on the link above. It should open a new
-	  window or tab displaying the rendered contents of the text
-	  box below. Try editing the text box's contents and
-	  refreshing the other window!
-	</p>
-	<textarea id="reply_body" cols="80" rows="12">
+    <h1>Reverse HTTP Demo</h1>
+    <p>
+      This page contains a running web server, written in
+      Javascript. The web server responds to requests to <b><a
+      id="demo_label_link" target="_blank"
+      href="http://???/">http://???/</a></b> by sending the
+      contents of the text box below.
+    </p>
+    <p>
+      To try it out, click on the link above. It should open a new
+      window or tab displaying the rendered contents of the text
+      box below. Try editing the text box's contents and
+      refreshing the other window!
+    </p>
+    <textarea id="reply_body" cols="80" rows="12">
 &lt;html&gt;
   &lt;head&gt;&lt;title&gt;Test reply!&lt;/title&gt;&lt;/head&gt;
   &lt;body&gt;
@@ -31,17 +31,17 @@
   &lt;/body&gt;
 &lt;/html&gt;
 </textarea>
-	<p>
-	  To set the virtual-host this web server serves content for,
-	  edit this input field:
-	  <input type="text" id="demo_label" value="demo" />
-	  Note how the link in the top paragraph changes.
-	</p>
-	<pre id="logOutput"></pre>
-
+    <p>
+      To set the virtual-host this web server serves content for,
+      edit this input field:
+      <input type="text" id="demo_label" value="demo" />
+      Note how the link in the top paragraph changes.
+    </p>
+    <pre id="logOutput"></pre>
+      
       </div>
     </div>
-    <script type="text/javascript" charset="utf-8">        
+    <script type="text/javascript" charset="utf-8">
         dbug.enable();
         var Demo = new Class({
             initialize: function() {

@@ -10,36 +10,33 @@
   <body>
     <div id="outerContainer">
       <div id="innerContainer">
-	<h1>PubSubHubBub Endpoint Demo</h1>
-	<p>
-	  This endpoint is available at URL <a id="endpointLocation" href="???">???</a>.
-	</p>
-	<p>
-	  <button>Clear log</button>
-	</p>
-	<pre id="logOutput"></pre>
+    <h1>PubSubHubBub Endpoint Demo</h1>
+    <p>
+      This endpoint is available at URL <a id="endpointLocation" href="???">???</a>.
+    </p>
+    <p>
+      <button>Clear log</button>
+    </p>
+    <pre id="logOutput"></pre>
       </div>
     </div>
-    <script type="text/javascript" charset="utf-8">        
-        var EndpointDemo = new Class({
-            initialize: function() {
-                dbug.enable();
-                this.messageServer = new oom.MessageServer({onLocationChanged: function(location) {
-                                                                var endpoint = location + "ep";
-                                                                $('endpointLocation').set({'text': endpoint, 'href': endpoint});
-                }});
-                this.messageServer.bind('ep', new oom.EndpointFacet({
-                    checkAction: function(actualUse, path) {
-                        dbug.log('checkAction: ' + actualUse + ', ' + path);
-                        return true;
-                    },
-                    deliver: function(topic, contentType, body) {
-                        dbug.log(topic + ' (' + contentType + '): ' + body);
-                    }
-                }));
-            }
+    <script type="text/javascript" charset="utf-8">
+        dbug.enable();
+        this.messageServer = new oom.MessageServer({
+                onLocationChanged: function(location) {
+                    var endpoint = location + "ep";
+                    $('endpointLocation').set({'text': endpoint, 'href': endpoint});
+                }
         });
-        new EndpointDemo();
+        this.messageServer.bind('ep', new oom.EndpointFacet({
+            checkAction: function(actualUse, path) {
+                dbug.log('checkAction: ' + actualUse + ', ' + path);
+                return true;
+            },
+            deliver: function(topic, contentType, body) {
+                dbug.log(topic + ' (' + contentType + '): ' + body);
+            }
+        }));
     </script>
   </body>
 </html>

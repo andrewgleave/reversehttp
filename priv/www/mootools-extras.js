@@ -1,6 +1,5 @@
 //MooTools More, <http://mootools.net/more>. Copyright (c) 2006-2009 Aaron Newton <http://clientcide.com/>, Valerio Proietti <http://mad4milk.net> & the MooTools team <http://mootools.net/developers>, MIT Style License.
 // dbug.js A wrapper for Firebug console.* statements. http://www.clientcide.com/wiki/cnet-libraries#license
-// ReadableIdentifier - Andrew  Gleave 2009
 MooTools.More={version:"1.2.3.1"};Class.refactor=function(b,a){$each(a,function(d,c){var e=b.prototype[c];if(e&&(e=e._origin)&&typeof d=="function"){b.implement(c,function(){var f=this.previous;
 this.previous=e;var g=d.apply(this,arguments);this.previous=f;return g})}else{b.implement(c,d)}});return b};String.implement({parseQueryString:function(){var b=this.split(/[&;]/),a={};
 if(b.length){b.each(function(d){var e=d.indexOf("="),f=e<0?[""]:d.substr(0,e).match(/[^\]\[]+/g),g=decodeURIComponent(d.substr(e+1)),c=a;
@@ -37,13 +36,48 @@ var j=["debug","info","warn","error","assert","dir","dirxml"];var g=["trace","gr
 function h(a,c){for(var b=0;b<a.length;b++){dbug[a[b]]=(i&&f[a[b]])?f[a[b]]:c}}h(j,dbug.log);h(g,function(){})})();if((!!window.console&&!!window.console.warn)||window.firebug){dbug.firebug=true;
 var value=document.cookie.match("(?:^|;)\\s*jsdebug=([^;]*)");var debugCookie=value?unescape(value[1]):false;if(window.location.href.indexOf("jsdebug=true")>0||debugCookie=="true"){dbug.enable()
 }if(debugCookie=="true"){dbug.log("debugging cookie enabled")}if(window.location.href.indexOf("jsdebugCookie=true")>0){dbug.cookie();
-if(!dbug.enabled){dbug.enable()}}if(window.location.href.indexOf("jsdebugCookie=false")>0){dbug.disableCookie()}}var ReadableIdentifier=new Class({Implements:Options,options:{pattern:"{start}{numeric}{end}",shuffle:false,alphaLength:6,numericLength:2,bannedFragments:[]},initialize:function(b){this.setOptions(b);
-this.numbers="0123456789";this.vowels="aeiouy";this.consonants="bcdfghjklmnpqrstvwxz";this.generate()},generate:function(){var g=Math.floor(this.options.alphaLength/2);
-var h="";if(this.options.alphaLength%2){g++}var f=this.options.alphaLength-g;for(var e=0;e<this.options.numericLength;e++){h+=this.randomChar(this.numbers)
-}this.id=this.options.pattern.substitute({start:this.buildAlpha(g),numeric:h,end:this.buildAlpha(f)});if(this.options.shuffle){this.id=this.id.split("").shuffle().join("")
-}return this.id},buildAlpha:function(f){while(true){var d="";for(var e=0;e<f;e++){d+=(e%2)?this.randomChar(this.vowels):this.randomChar(this.consonants)
-}if(this.options.bannedFragments.every(function(a){return !d.contains(a)})){}return d}},randomChar:function(b){return b.charAt(Math.floor(Math.random()*b.length))
-}});URI.implement({getFullHost:function(){return this.get("port")?this.get("host")+":"+this.get("port"):this.get("host")}});
-Array.implement({shuffle:function(){for(var b,a,c=this.length;c;b=parseInt(Math.random()*c),a=this[--c],this[c]=this[b],this[b]=a){}return this
-}});String.implement({decodeUtf8:function(){return decodeURIComponent(escape(this))},encodeUtf8:function(){return unescape(encodeURIComponent(this))
-},randomChar:function(){return this.charAt(Math.floor(Math.random()*this.length))}});
+if(!dbug.enabled){dbug.enable()}}if(window.location.href.indexOf("jsdebugCookie=false")>0){dbug.disableCookie()}}
+// ReadableIdentifier - Andrew  Gleave 2009
+var ReadableIdentifier = new Class({
+    Implements: Options,
+    options: {
+        pattern: '{start}{numeric}{end}',
+        shuffle: false,
+        alphaLength: 6,
+        numericLength: 2,
+        bannedFragments: []
+    },
+    initialize: function(options) {
+        this.setOptions(options);
+        this.numbers = '0123456789';
+        this.vowels = 'aeiouy';
+        this.consonants = 'bcdfghjklmnpqrstvwxz';
+        this.generate();
+    },
+    generate: function() {
+        var startLength = Math.floor(this.options.alphaLength / 2);
+        var numericChunk = '';
+        if(this.options.alphaLength % 2) startLength++;
+        var endLength  = this.options.alphaLength - startLength;
+        for(var i = 0; i < this.options.numericLength; i++)
+            numericChunk += this.randomChar(this.numbers);
+        this.id = this.options.pattern.substitute({'start': this.buildAlpha(startLength),
+                                                'numeric': numericChunk,
+                                                'end': this.buildAlpha(endLength)});
+        if(this.options.shuffle)
+            this.id = this.id.split('').shuffle().join('');
+        return this.id;
+    },
+    buildAlpha: function(length) {
+        while(true) {
+            var alphaChunk = '';
+            for(var i = 0; i < length; i++)
+                alphaChunk += (i % 2) ? this.randomChar(this.vowels) : this.randomChar(this.consonants);
+            if(this.options.bannedFragments.every(function(item){ return !alphaChunk.contains(item);}));
+                return alphaChunk;
+        }
+    },
+    randomChar: function(text) {
+        return text.charAt(Math.floor(Math.random() * text.length));
+    }
+});

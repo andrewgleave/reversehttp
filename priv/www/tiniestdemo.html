@@ -15,9 +15,9 @@
                  $('serviceLocation').set({'text': location, 'href': location});
              },
              callback: function(request) {
-                 request.respond(new oom.Response({status: 200, 
-                                message: 'OK', 
-                                body: $('responsetext').get('value'), 
+                 request.respond(new oom.Response({status: 200,
+                                message: 'OK',
+                                body: $('responsetext').get('value'),
                                 headers: {'Content-type': 'text/plain; charset=utf-8'}}));
          }}).start();
     </script>
