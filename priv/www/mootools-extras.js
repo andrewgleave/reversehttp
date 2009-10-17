@@ -1,5 +1,6 @@
 //MooTools More, <http://mootools.net/more>. Copyright (c) 2006-2009 Aaron Newton <http://clientcide.com/>, Valerio Proietti <http://mad4milk.net> & the MooTools team <http://mootools.net/developers>, MIT Style License.
 // dbug.js A wrapper for Firebug console.* statements. http://www.clientcide.com/wiki/cnet-libraries#license
+// ReadableIdentifier - Andrew  Gleave 2009
 MooTools.More={version:"1.2.3.1"};Class.refactor=function(b,a){$each(a,function(d,c){var e=b.prototype[c];if(e&&(e=e._origin)&&typeof d=="function"){b.implement(c,function(){var f=this.previous;
 this.previous=e;var g=d.apply(this,arguments);this.previous=f;return g})}else{b.implement(c,d)}});return b};String.implement({parseQueryString:function(){var b=this.split(/[&;]/),a={};
 if(b.length){b.each(function(d){var e=d.indexOf("="),f=e<0?[""]:d.substr(0,e).match(/[^\]\[]+/g),g=decodeURIComponent(d.substr(e+1)),c=a;
@@ -36,7 +37,8 @@ var j=["debug","info","warn","error","assert","dir","dirxml"];var g=["trace","gr
 function h(a,c){for(var b=0;b<a.length;b++){dbug[a[b]]=(i&&f[a[b]])?f[a[b]]:c}}h(j,dbug.log);h(g,function(){})})();if((!!window.console&&!!window.console.warn)||window.firebug){dbug.firebug=true;
 var value=document.cookie.match("(?:^|;)\\s*jsdebug=([^;]*)");var debugCookie=value?unescape(value[1]):false;if(window.location.href.indexOf("jsdebug=true")>0||debugCookie=="true"){dbug.enable()
 }if(debugCookie=="true"){dbug.log("debugging cookie enabled")}if(window.location.href.indexOf("jsdebugCookie=true")>0){dbug.cookie();
-if(!dbug.enabled){dbug.enable()}}if(window.location.href.indexOf("jsdebugCookie=false")>0){dbug.disableCookie()}}
+if(!dbug.enabled){dbug.enable()}}if(window.location.href.indexOf("jsdebugCookie=false")>0){dbug.disableCookie()}}String.implement({decodeUtf8:function(){return decodeURIComponent(escape(this))},encodeUtf8:function(){return unescape(encodeURIComponent(this))
+},randomChar:function(){return this.charAt(Math.floor(Math.random()*this.length))}});
 // ReadableIdentifier - Andrew  Gleave 2009
 var ReadableIdentifier = new Class({
     Implements: Options,
